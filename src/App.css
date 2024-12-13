@@ -1,0 +1,67 @@
+body {
+  font-family: 'AnekGujarati', sans-serif;
+  background-image: url('img/abc.jpg');
+  color: #761316; /* Set the font color globally */
+  font-weight: bold; 
+}
+
+.App {
+  text-align: center;
+  /* padding: 20px; */
+  color: #761316; /* Set the font color */
+}
+
+.nameText {
+  font-family: 'AnekGujarati', sans-serif;
+  font-weight: bold; /* Make the font bold */
+  color: #761316; /* Set the font color */
+}
+
+.name-input {
+  padding: 10px;
+  font-size: 16px;
+  margin: 10px 0;
+  width: 60%;
+  font-weight: bold; /* Make the font bold */
+  color: #761316; /* Set the font color */
+}
+
+.image-preview {
+  position: relative;
+  display: inline-block;
+}
+
+.preview-image {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.text-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  font-weight: bold; /* Make the font bold */
+  color: #761316; /* Set the font color */
+  text-shadow: 1px 1px 2px black;
+}
+
+.generate-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #c59353;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.generate-button:hover {
+  background-color: #3d5b9d;
+}
+.hidden {
+  display: none;
+}
