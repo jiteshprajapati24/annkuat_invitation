@@ -61,7 +61,7 @@ function App() {
 
   const calculatePositions = (nameLength) => {
     // If the name length exceeds 20, adjust the x and y positions
-    if (nameLength > 35) {
+    if (nameLength > 33) {
       return { x: 80, y: 505 };
     }
     return { x: 215, y: 465 };
