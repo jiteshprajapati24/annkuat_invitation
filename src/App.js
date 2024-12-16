@@ -120,7 +120,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Invitation</h1>
+      <h1>General Invitation</h1>
       <input
         type="text"
         value={name}
