@@ -4,39 +4,31 @@ import pdfMake from "pdfmake/build/pdfmake.min";
 import AYMInvitation from "./pdf/AYM.pdf"; // Import your PDF file
 import "./App.css";
 import { PDFDocument } from "pdf-lib";
-import { saveAs } from 'file-saver';
+import { saveAs } from "file-saver";
 
 function App() {
   const [name, setName] = useState("");
-  const [position, setPosition] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const renderTextToImage = (
-    text,
-    canvasWidth = 300,
-    canvasHeight = 50,
-    isSemiBold = false
-  ) => {
+  const renderTextToImage = (text, canvasWidth = 300, canvasHeight = 50, isSemiBold = false) => {
     const canvas = document.createElement("canvas");
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-
     const ctx = canvas.getContext("2d");
+    let fontSize = 20;
+    const fontWeight = isSemiBold ? "600" : "bold";
+    ctx.font = `${fontWeight} ${fontSize}px 'S0763892'`;
+    ctx.fillStyle = "#b40000";
 
-    let fontSize = 20; // Default font size
-    const fontWeight = isSemiBold ? "600" : "bold"; // Set semi-bold or bold
-    ctx.font = `${fontWeight} ${fontSize}px 'S0763892'`; // Adjust font weight
-    ctx.fillStyle = "#b40000"; // Text color
-
-    // Adjust font size dynamically for longer text
     while (ctx.measureText(text).width > canvasWidth - 20 && fontSize > 14) {
       fontSize--;
       ctx.font = `${fontWeight} ${fontSize}px 'S0763892'`;
     }
 
-    // Wrap text if needed
-    const lines = [];
-    let currentLine = "";
     const words = text.split(" ");
+    let currentLine = "";
+    const lines = [];
     words.forEach((word) => {
       const testLine = currentLine + word + " ";
       if (ctx.measureText(testLine).width > canvasWidth - 20) {
@@ -48,7 +40,6 @@ function App() {
     });
     lines.push(currentLine.trim());
 
-    // Render lines
     const lineHeight = fontSize + 10;
     let y = 40;
     lines.forEach((line) => {
@@ -60,7 +51,6 @@ function App() {
   };
 
   const calculatePositions = (nameLength) => {
-    // If the name length exceeds 20, adjust the x and y positions
     if (nameLength > 33) {
       return { x: 80, y: 505 };
     }
@@ -82,21 +72,20 @@ function App() {
       saveAs(mergedPDFBlob, `${name || "Generated"}.pdf`);
     } catch (error) {
       console.error("Error merging PDFs:", error.message);
+      setErrorMessage("Failed to generate PDF");
     }
   };
 
   const generatePDF = () => {
-    const formattedName = name.endsWith(",") ? name : `${name}`;
-    const formattedPosition = `${position}`;
-    const gujaratiImageName = renderTextToImage(formattedName, 500, 400);
-    const gujaratiImagePosition = renderTextToImage(
-      formattedPosition,
-      300,
-      200,
-      true
-    );
+    if (!name) {
+      setErrorMessage("Name is required.");
+      return;
+    }
+    setErrorMessage("");
+    setIsLoading(true);
 
-    const positions = calculatePositions(formattedName.length);
+    const gujaratiImageName = renderTextToImage(name, 500, 400);
+    const positions = calculatePositions(name.length);
 
     const docDefinition = {
       content: [
@@ -115,12 +104,13 @@ function App() {
 
     pdfMake.createPdf(docDefinition).getBlob(async (generatedPDFBlob) => {
       await mergePDFs(generatedPDFBlob, AYMInvitation);
+      setIsLoading(false);
     });
   };
 
   return (
     <div className="App">
-      <h1>General Invitation</h1>
+      <h1>Atmiya Yuva Mahotsav General Invitation</h1>
       <input
         type="text"
         value={name}
@@ -128,12 +118,19 @@ function App() {
         placeholder="Enter your name"
         className="name-input"
       />
-      
-      <br />
-      <br />
-      <button onClick={generatePDF} className="generate-button">
-        Generate Invitation
+
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
+
+      <button onClick={generatePDF} className="generate-button" disabled={isLoading}>
+        {isLoading ? "Generating..." : "Generate Invitation"}
       </button>
+
+      {isLoading && (
+        <div className="loader">
+          <div className="spinner"></div>
+          <p>Generating your invitation...</p>
+        </div>
+      )}
     </div>
   );
 }
