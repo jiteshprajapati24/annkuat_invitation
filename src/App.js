@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { backgroundImage } from "./background"; // Import the image from background.js
 import "./App.css";
 import { saveAs } from "file-saver";
 
@@ -13,7 +14,7 @@ function App() {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     const ctx = canvas.getContext("2d");
-    let fontSize = 15; 
+    let fontSize = 20; 
     const fontWeight = isSemiBold ? "600" : "bold";
     ctx.font = `${fontWeight} ${fontSize}px 'S0763892'`;
     ctx.fillStyle = "#b40000";
@@ -47,28 +48,22 @@ function App() {
     return canvas.toDataURL();
   };
 
-  // No base64 conversion needed when backend draws JPG from disk
-
   const calculatePositions = (nameLength) => {
     if (nameLength > 33) {
-      return { x: 200, y: 325 };
+      return { x: 293, y: 495 };
     }
-    return { x: 200, y: 325 };
+    return { x: 293, y: 495 };
   };
 
-  const generateViaBackend = async (value) => {
-    const response = await fetch("http://localhost:5001/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: value }),
+  const loadImage = (src) =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
     });
-    if (!response.ok) {
-      throw new Error("Backend generation failed");
-    }
-    return await response.blob();
-  };
 
-  const generatePDF = async () => {
+  const generateImage = async () => {
     if (!name) {
       setErrorMessage("Name is required.");
       return;
@@ -77,11 +72,29 @@ function App() {
     setIsLoading(true);
 
     try {
-      const backendBlob = await generateViaBackend(name);
-      saveAs(backendBlob, `${name || "Generated"}.pdf`);
+      const bg = await loadImage(backgroundImage);
+      const canvas = document.createElement("canvas");
+      canvas.width = bg.width;
+      canvas.height = bg.height;
+      const ctx = canvas.getContext("2d");
+
+      // Draw background
+      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
+      // Render name to an image and draw it on top
+      const gujaratiImageName = renderTextToImage(name, 500, 400);
+      const nameImg = await loadImage(gujaratiImageName);
+      const positions = calculatePositions(name.length);
+      ctx.drawImage(nameImg, positions.x, positions.y);
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          saveAs(blob, `${name || "Generated"}.png`);
+        }
+        setIsLoading(false);
+      }, "image/png");
     } catch (e) {
-      setErrorMessage("Failed to generate PDF. Please ensure the backend is running.");
-    } finally {
+      setErrorMessage("Failed to generate image.");
       setIsLoading(false);
     }
   };
@@ -99,8 +112,8 @@ function App() {
 
       {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-      <button onClick={generatePDF} className="generate-button" disabled={isLoading}>
-        {isLoading ? "Generating..." : "Generate Invitation"}
+      <button onClick={generateImage} className="generate-button" disabled={isLoading}>
+        {isLoading ? "Generating..." : "Generate Invitation Image"}
       </button>
 
       {isLoading && (
