@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { backgroundImage } from "./background"; // Import the image from background.js
+import backgroundJpg from "./img/Annakut.jpg";
 import pdfMake from "pdfmake/build/pdfmake.min";
 import "./App.css";
 import { saveAs } from "file-saver";
@@ -49,6 +49,17 @@ function App() {
     return canvas.toDataURL();
   };
 
+  const loadImageAsDataURL = async (url) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
+
   const calculatePositions = (nameLength) => {
     if (nameLength > 33) {
       return { x: 200, y: 325 };
@@ -56,11 +67,11 @@ function App() {
     return { x: 200, y: 325 };
   };
 
-  const generateViaBackend = async (value) => {
+  const generateViaBackend = async (value, bgDataUrl) => {
     const response = await fetch("http://localhost:5001/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: value, backgroundImage }),
+      body: JSON.stringify({ name: value, backgroundImage: bgDataUrl }),
     });
     if (!response.ok) {
       throw new Error("Backend generation failed");
@@ -76,8 +87,16 @@ function App() {
     setErrorMessage("");
     setIsLoading(true);
 
+    // Prepare background image data URL from JPG
+    let backgroundImageDataUrl;
     try {
-      const backendBlob = await generateViaBackend(name);
+      backgroundImageDataUrl = await loadImageAsDataURL(backgroundJpg);
+    } catch (_) {
+      backgroundImageDataUrl = undefined;
+    }
+
+    try {
+      const backendBlob = await generateViaBackend(name, backgroundImageDataUrl);
       saveAs(backendBlob, `${name || "Generated"}.pdf`);
       setIsLoading(false);
       return;
@@ -97,7 +116,7 @@ function App() {
       ],
       background: [
         {
-          image: backgroundImage,
+          image: backgroundImageDataUrl,
           width: 595,
         }
       ],
