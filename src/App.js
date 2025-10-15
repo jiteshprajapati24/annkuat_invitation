@@ -56,13 +56,34 @@ function App() {
     return { x: 200, y: 325 };
   };
 
-  const generatePDF = () => {
+  const generateViaBackend = async (value) => {
+    const response = await fetch("http://localhost:5001/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: value, backgroundImage }),
+    });
+    if (!response.ok) {
+      throw new Error("Backend generation failed");
+    }
+    return await response.blob();
+  };
+
+  const generatePDF = async () => {
     if (!name) {
       setErrorMessage("Name is required.");
       return;
     }
     setErrorMessage("");
     setIsLoading(true);
+
+    try {
+      const backendBlob = await generateViaBackend(name);
+      saveAs(backendBlob, `${name || "Generated"}.pdf`);
+      setIsLoading(false);
+      return;
+    } catch (_) {
+      // Fall back to client-side rendering
+    }
 
     const gujaratiImageName = renderTextToImage(name, 500, 400);
     const positions = calculatePositions(name.length);

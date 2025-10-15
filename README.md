@@ -1,3 +1,94 @@
+## Backend/Frontend separation
+
+This project can run with a Python backend for server-side PDF generation and a React frontend for UI.
+
+### Backend (Python + Flask)
+
+1. Create a new folder next to this project, e.g. `backend`.
+2. Inside `backend`, create `app.py`:
+
+```python
+from flask import Flask, request, send_file, jsonify
+from io import BytesIO
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+
+app = Flask(__name__)
+
+@app.post('/api/generate')
+def generate():
+    data = request.get_json(force=True)
+    name = (data or {}).get('name', '').strip()
+    if not name:
+        return jsonify({ 'error': 'Name is required' }), 400
+
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+    c.setFillColorRGB(0.7, 0, 0)
+    c.setFont('Helvetica-Bold', 16)
+    c.drawString(100, height - 200, name)
+    c.showPage()
+    c.save()
+    buffer.seek(0)
+
+    return send_file(buffer, mimetype='application/pdf', as_attachment=True, download_name=f"{name or 'Generated'}.pdf")
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5001, debug=True)
+```
+
+3. Create `requirements.txt`:
+
+```
+Flask==3.0.0
+reportlab==4.2.0
+```
+
+4. Install and run:
+
+```bash
+python -m venv .venv
+. .venv/Scripts/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python app.py
+```
+
+### Frontend (React)
+
+Update the button handler to call the backend first and fall back to client-side if the request fails.
+
+```js
+async function generateViaBackend(name) {
+  const res = await fetch('http://localhost:5001/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  });
+  if (!res.ok) throw new Error('backend failed');
+  return await res.blob();
+}
+```
+
+In `generatePDF`, try backend first:
+
+```js
+try {
+  const blob = await generateViaBackend(name);
+  saveAs(blob, `${name || 'Generated'}.pdf`);
+} catch (_) {
+  // fall back to existing client-side pdfMake flow
+}
+```
+
+Configure CORS if serving frontend separately. In Flask:
+
+```python
+pip install flask-cors
+from flask_cors import CORS
+CORS(app)
+```
+
 <<<<<<< HEAD
 # અન્નકૂટોત્સવ Invitation
 #
