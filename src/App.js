@@ -51,7 +51,7 @@ function App() {
 
   const calculatePositions = (nameLength) => {
     if (nameLength > 33) {
-      return { x: 80, y: 505 };
+      return { x: 200, y: 325 };
     }
     return { x: 200, y: 325 };
   };
