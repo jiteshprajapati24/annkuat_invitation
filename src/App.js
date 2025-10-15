@@ -18,7 +18,7 @@ function App() {
     const fontWeight = isSemiBold ? "600" : "bold";
     ctx.font = `${fontWeight} ${fontSize}px 'S0763892'`;
     ctx.fillStyle = "#b40000";
-
+ 
     while (ctx.measureText(text).width > canvasWidth - 20 && fontSize > 14) {
       fontSize--;
       ctx.font = `${fontWeight} ${fontSize}px 'S0763892'`;
