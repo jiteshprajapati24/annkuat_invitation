@@ -1,7 +1,5 @@
 
 import React, { useState } from "react";
-import backgroundJpg from "./img/Annakut.jpg";
-import pdfMake from "pdfmake/build/pdfmake.min";
 import "./App.css";
 import { saveAs } from "file-saver";
 
@@ -49,16 +47,7 @@ function App() {
     return canvas.toDataURL();
   };
 
-  const loadImageAsDataURL = async (url) => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  };
+  // No base64 conversion needed when backend draws JPG from disk
 
   const calculatePositions = (nameLength) => {
     if (nameLength > 33) {
@@ -67,11 +56,11 @@ function App() {
     return { x: 200, y: 325 };
   };
 
-  const generateViaBackend = async (value, bgDataUrl) => {
+  const generateViaBackend = async (value) => {
     const response = await fetch("http://localhost:5001/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: value, backgroundImage: bgDataUrl }),
+      body: JSON.stringify({ name: value }),
     });
     if (!response.ok) {
       throw new Error("Backend generation failed");
@@ -87,45 +76,14 @@ function App() {
     setErrorMessage("");
     setIsLoading(true);
 
-    // Prepare background image data URL from JPG
-    let backgroundImageDataUrl;
     try {
-      backgroundImageDataUrl = await loadImageAsDataURL(backgroundJpg);
-    } catch (_) {
-      backgroundImageDataUrl = undefined;
-    }
-
-    try {
-      const backendBlob = await generateViaBackend(name, backgroundImageDataUrl);
+      const backendBlob = await generateViaBackend(name);
       saveAs(backendBlob, `${name || "Generated"}.pdf`);
+    } catch (e) {
+      setErrorMessage("Failed to generate PDF. Please ensure the backend is running.");
+    } finally {
       setIsLoading(false);
-      return;
-    } catch (_) {
-      // Fall back to client-side rendering
     }
-
-    const gujaratiImageName = renderTextToImage(name, 500, 400);
-    const positions = calculatePositions(name.length);
-
-    const docDefinition = {
-      content: [
-        {
-          image: gujaratiImageName,
-          absolutePosition: { x: positions.x, y: positions.y },
-        }
-      ],
-      background: [
-        {
-          image: backgroundImageDataUrl,
-          width: 595,
-        }
-      ],
-    };
-
-    pdfMake.createPdf(docDefinition).getBlob((generatedPDFBlob) => {
-      saveAs(generatedPDFBlob, `${name || "Generated"}.pdf`);
-      setIsLoading(false);
-    });
   };
 
   return (

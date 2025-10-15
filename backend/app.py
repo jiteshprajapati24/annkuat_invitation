@@ -1,6 +1,7 @@
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 from io import BytesIO
+import os
 import base64
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -21,7 +22,8 @@ def generate():
     c = canvas.Canvas(buffer, pagesize=A4)
     page_width, page_height = A4
 
-    # Draw background if provided (data URL: data:image/...;base64,<payload>)
+    # Draw background:
+    # 1) If a data URL was provided, decode and draw it
     if isinstance(background_data_url, str) and background_data_url.startswith('data:') and 'base64,' in background_data_url:
         try:
             b64_part = background_data_url.split('base64,', 1)[1]
@@ -29,13 +31,22 @@ def generate():
             img_reader = ImageReader(BytesIO(img_bytes))
             c.drawImage(img_reader, 0, 0, width=page_width, height=page_height, preserveAspectRatio=False, mask='auto')
         except Exception:
-            # If decoding fails, continue without background
             pass
+    else:
+        # 2) Otherwise, load the JPG directly from disk (no base64)
+        # Resolve path: backend/app.py -> project root -> src/img/Annakut.jpg
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        jpg_path = os.path.normpath(os.path.join(app_dir, '..', 'src', 'img', 'Annakut.jpg'))
+        if os.path.exists(jpg_path):
+            try:
+                c.drawImage(jpg_path, 0, 0, width=page_width, height=page_height, preserveAspectRatio=False, mask='auto')
+            except Exception:
+                pass
 
     # Draw name text (you may tune font, color, and position)
     c.setFillColorRGB(0.70, 0, 0)
     c.setFont('Helvetica-Bold', 18)
-    # Example position roughly similar to client-side; adjust as needed
+    # Position with top-left coordinates (x=200, y=325) converted to bottom-left
     c.drawString(200, page_height - 325, name)
 
     c.showPage()
