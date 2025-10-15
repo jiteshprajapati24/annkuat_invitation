@@ -1,5 +1,5 @@
 ## Backend/Frontend separation
-
+#
 This project can run with a Python backend for server-side PDF generation and a React frontend for UI.
 
 ### Backend (Python + Flask)
