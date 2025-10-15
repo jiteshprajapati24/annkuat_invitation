@@ -89,7 +89,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Atmiya Yuva Mahotsav General Invitation</h1>
+      <h1>અન્નકૂટોત્સવ Invitation General Invitation</h1>
       <input
         type="text"
         value={name}
