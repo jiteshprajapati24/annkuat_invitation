@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { backgroundImage } from "./background"; // Import the image from background.js
 import pdfMake from "pdfmake/build/pdfmake.min";
-import AYMInvitation from "./pdf/AYM.pdf"; // Import your PDF file
 import "./App.css";
-import { PDFDocument } from "pdf-lib";
 import { saveAs } from "file-saver";
 
 function App() {
@@ -16,7 +14,7 @@ function App() {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     const ctx = canvas.getContext("2d");
-    let fontSize = 20;
+    let fontSize = 15;
     const fontWeight = isSemiBold ? "600" : "bold";
     ctx.font = `${fontWeight} ${fontSize}px 'S0763892'`;
     ctx.fillStyle = "#b40000";
@@ -54,26 +52,7 @@ function App() {
     if (nameLength > 33) {
       return { x: 80, y: 505 };
     }
-    return { x: 215, y: 465 };
-  };
-
-  const mergePDFs = async (generatedPDFBlob, additionalPDFUrl) => {
-    try {
-      const generatedPDFBytes = await generatedPDFBlob.arrayBuffer();
-      const response = await fetch(additionalPDFUrl);
-      if (!response.ok) throw new Error("Failed to fetch additional PDF");
-      const additionalPDFBytes = await response.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(generatedPDFBytes);
-      const additionalPDF = await PDFDocument.load(additionalPDFBytes);
-      const additionalPages = await pdfDoc.copyPages(additionalPDF, additionalPDF.getPageIndices());
-      additionalPages.forEach((page) => pdfDoc.addPage(page));
-      const mergedPDFBytes = await pdfDoc.save();
-      const mergedPDFBlob = new Blob([mergedPDFBytes], { type: 'application/pdf' });
-      saveAs(mergedPDFBlob, `${name || "Generated"}.pdf`);
-    } catch (error) {
-      console.error("Error merging PDFs:", error.message);
-      setErrorMessage("Failed to generate PDF");
-    }
+    return { x: 200, y: 325 };
   };
 
   const generatePDF = () => {
@@ -102,8 +81,8 @@ function App() {
       ],
     };
 
-    pdfMake.createPdf(docDefinition).getBlob(async (generatedPDFBlob) => {
-      await mergePDFs(generatedPDFBlob, AYMInvitation);
+    pdfMake.createPdf(docDefinition).getBlob((generatedPDFBlob) => {
+      saveAs(generatedPDFBlob, `${name || "Generated"}.pdf`);
       setIsLoading(false);
     });
   };
