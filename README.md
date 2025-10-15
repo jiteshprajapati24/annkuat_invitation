@@ -5,7 +5,7 @@
 # અન્નકૂટોત્સવ 
 >>>>>>> 4858793c01592805148278c656a4a327ed2eba5d
 # Getting Started with Create React App
-
+#
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
