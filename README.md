@@ -90,10 +90,10 @@ CORS(app)
 ```
 
 <<<<<<< HEAD
-# અન્નકૂટોત્સવ Invitation
+# ગુરુ પૂર્ણિમા Invitation
 #
 =======
-# અન્નકૂટોત્સવ 
+# ગુરુ પૂર્ણિમા 
 >>>>>>> 4858793c01592805148278c656a4a327ed2eba5d
 # Getting Started with Create React App
 #

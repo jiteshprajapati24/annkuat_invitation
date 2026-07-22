@@ -14,12 +14,12 @@ function App() {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     const ctx = canvas.getContext("2d");
-    let fontSize = 20; 
+    let fontSize = 35; 
     const fontWeight = isSemiBold ? "600" : "bold";
     ctx.font = `${fontWeight} ${fontSize}px 'S0763892'`;
     ctx.fillStyle = "#b40000";
  
-    while (ctx.measureText(text).width > canvasWidth - 20 && fontSize > 14) {
+    while (ctx.measureText(text).width > canvasWidth - 40 && fontSize > 20) {
       fontSize--;
       ctx.font = `${fontWeight} ${fontSize}px 'S0763892'`;
     }
@@ -39,7 +39,7 @@ function App() {
     lines.push(currentLine.trim());
 
     const lineHeight = fontSize + 10;
-    let y = 40;
+    let y = 215;
     lines.forEach((line) => {
       ctx.fillText(line, 10, y);
       y += lineHeight;
@@ -50,9 +50,9 @@ function App() {
 
   const calculatePositions = (nameLength) => {
     if (nameLength > 33) {
-      return { x: 293, y: 495 };
+      return { x: 370, y: 495 };
     }
-    return { x: 293, y: 495 };
+    return { x: 370, y: 495 };
   };
 
   const loadImage = (src) =>
@@ -101,7 +101,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>અન્નકૂટોત્સવ Invitation General Invitation</h1>
+      <h1>ગુરુ પૂર્ણિમા Invitation </h1>
       <input
         type="text"
         value={name}
