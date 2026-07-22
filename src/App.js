@@ -119,7 +119,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>ગુરુ પૂર્ણિમા Invitation </h1>
+      <h1>ગુરુપૂર્ણિમા સુરત આમંત્રણ કાર્ડ </h1>
       <input
         type="text"
         value={name}
