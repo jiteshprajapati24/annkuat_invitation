@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { backgroundImage } from "./background"; // Import the image from background.js
 import "./App.css";
 import { saveAs } from "file-saver";
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, PDFString } from "pdf-lib";
 
 function App() {
   const [name, setName] = useState("");
@@ -40,7 +40,7 @@ function App() {
     lines.push(currentLine.trim());
 
     const lineHeight = fontSize + 10;
-    let y = 220;
+    let y = 215;
     lines.forEach((line) => {
       ctx.fillText(line, 10, y);
       y += lineHeight;
@@ -104,6 +104,30 @@ function App() {
         width: pngImage.width,
         height: pngImage.height,
       });
+
+      // Add clickable link annotation ONLY over the bottom "Scan For Location" & QR code area
+      const scaleX = pngImage.width / 1240;
+      const scaleY = pngImage.height / 1755;
+      const pdfX1 = 780 * scaleX;
+      const pdfX2 = 1230 * scaleX;
+      const pdfY1 = pngImage.height - (1740 * scaleY);
+      const pdfY2 = pngImage.height - (1200 * scaleY);
+
+      const linkAnnotDict = pdfDoc.context.obj({
+        Type: 'Annot',
+        Subtype: 'Link',
+        Rect: [pdfX1, pdfY1, pdfX2, pdfY2],
+        Border: [0, 0, 0],
+        C: [0, 0, 0],
+        A: {
+          Type: 'Action',
+          S: 'URI',
+          URI: PDFString.of('https://maps.app.goo.gl/nT6ZbWWLDWmhFjJ66?g_st=iw'),
+        },
+      });
+
+      const linkAnnotRef = pdfDoc.context.register(linkAnnotDict);
+      page.node.addAnnot(linkAnnotRef);
 
       // Save and download PDF file
       const pdfBytes = await pdfDoc.save();
