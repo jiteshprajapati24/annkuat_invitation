@@ -40,7 +40,7 @@ function App() {
     lines.push(currentLine.trim());
 
     const lineHeight = fontSize + 10;
-    let y = 215;
+    let y = 220;
     lines.forEach((line) => {
       ctx.fillText(line, 10, y);
       y += lineHeight;
