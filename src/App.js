@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { backgroundImage } from "./background"; // Import the image from background.js
 import "./App.css";
 import { saveAs } from "file-saver";
+import { PDFDocument } from "pdf-lib";
 
 function App() {
   const [name, setName] = useState("");
@@ -18,7 +19,7 @@ function App() {
     const fontWeight = isSemiBold ? "600" : "bold";
     ctx.font = `${fontWeight} ${fontSize}px 'S0763892'`;
     ctx.fillStyle = "#ff0000";
- 
+
     while (ctx.measureText(text).width > canvasWidth - 40 && fontSize > 20) {
       fontSize--;
       ctx.font = `${fontWeight} ${fontSize}px 'S0763892'`;
@@ -63,7 +64,7 @@ function App() {
       img.src = src;
     });
 
-  const generateImage = async () => {
+  const generatePDF = async () => {
     if (!name) {
       setErrorMessage("Name is required.");
       return;
@@ -87,14 +88,31 @@ function App() {
       const positions = calculatePositions(name.length);
       ctx.drawImage(nameImg, positions.x, positions.y);
 
-      canvas.toBlob((blob) => {
-        if (blob) {
-          saveAs(blob, `${name || "Generated"}.png`);
-        }
-        setIsLoading(false);
-      }, "image/png");
+      // Convert canvas to PNG data URL and ArrayBuffer
+      const dataUrl = canvas.toDataURL("image/png");
+      const imageBytes = await fetch(dataUrl).then((res) => res.arrayBuffer());
+
+      // Create PDF document using pdf-lib
+      const pdfDoc = await PDFDocument.create();
+      const pngImage = await pdfDoc.embedPng(imageBytes);
+
+      // Add page with exact image size
+      const page = pdfDoc.addPage([pngImage.width, pngImage.height]);
+      page.drawImage(pngImage, {
+        x: 0,
+        y: 0,
+        width: pngImage.width,
+        height: pngImage.height,
+      });
+
+      // Save and download PDF file
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      saveAs(blob, `${name || "Invitation"}.pdf`);
+      setIsLoading(false);
     } catch (e) {
-      setErrorMessage("Failed to generate image.");
+      console.error(e);
+      setErrorMessage("Failed to generate PDF.");
       setIsLoading(false);
     }
   };
@@ -112,14 +130,14 @@ function App() {
 
       {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-      <button onClick={generateImage} className="generate-button" disabled={isLoading}>
-        {isLoading ? "Generating..." : "Generate Invitation Image"}
+      <button onClick={generatePDF} className="generate-button" disabled={isLoading}>
+        {isLoading ? "Generating..." : "Generate Invitation PDF"}
       </button>
 
       {isLoading && (
         <div className="loader">
           <div className="spinner"></div>
-          <p>Generating your invitation...</p>
+          <p>Generating your invitation PDF...</p>
         </div>
       )}
     </div>
