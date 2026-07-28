@@ -40,7 +40,7 @@ function App() {
     lines.push(currentLine.trim());
 
     const lineHeight = fontSize + 10;
-    let y = 215;
+    let y = 146;
     lines.forEach((line) => {
       ctx.fillText(line, 10, y);
       y += lineHeight;
@@ -51,9 +51,9 @@ function App() {
 
   const calculatePositions = (nameLength) => {
     if (nameLength > 33) {
-      return { x: 370, y: 495 };
+      return { x: 340, y: 495 };
     }
-    return { x: 370, y: 495 };
+    return { x: 340, y: 495 };
   };
 
   const loadImage = (src) =>
