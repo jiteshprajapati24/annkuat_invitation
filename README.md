@@ -1,7 +1,7 @@
 ## Backend/Frontend separation
 
 This project can run with a Python backend for server-side PDF generation and a React frontend for UI.
-
+#
 ### Backend (Python + Flask)
 
 1. Create a new folder next to this project, e.g. `backend`.
