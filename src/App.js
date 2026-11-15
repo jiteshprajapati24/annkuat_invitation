@@ -54,7 +54,6 @@ function App() {
       return { x: 365, y: 495 };
     }
     return { x: 365, y: 495 };
-
   };
 
   const loadImage = (src) =>
