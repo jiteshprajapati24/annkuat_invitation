@@ -143,8 +143,8 @@ function App() {
 
   return (
     <div className="App">
-      <h1>અન્નકૂટોત્સવ આમંત્રણ કાર્ડ
-      </h1>
+      <h1>અન્નકૂટોત્સવ આમંત્રણ કાર્ડ</h1>
+      <p className="subtitle">આત્મીય સંસ્કારધામ સણિયા કણદે. તા.  ૨૪ નવેમ્બર, ૨૦૨૬</p>
       <input
         type="text"
         value={name}
