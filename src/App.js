@@ -15,7 +15,7 @@ function App() {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     const ctx = canvas.getContext("2d");
-    let fontSize = 35; 
+    let fontSize = 35;
     const fontWeight = isSemiBold ? "600" : "bold";
     ctx.font = `${fontWeight} ${fontSize}px 'S0763892'`;
     ctx.fillStyle = "#ff0000";
@@ -40,7 +40,7 @@ function App() {
     lines.push(currentLine.trim());
 
     const lineHeight = fontSize + 10;
-    let y = 114;
+    let y = 360;
     lines.forEach((line) => {
       ctx.fillText(line, 10, y);
       y += lineHeight;
@@ -51,9 +51,9 @@ function App() {
 
   const calculatePositions = (nameLength) => {
     if (nameLength > 33) {
-      return { x: 347, y: 495 };
+      return { x: 365, y: 495 };
     }
-    return { x: 347, y: 495 };
+    return { x: 365, y: 495 };
   };
 
   const loadImage = (src) =>
@@ -143,7 +143,8 @@ function App() {
 
   return (
     <div className="App">
-      <h1>ગુરુપૂર્ણિમા સુરત આમંત્રણ કાર્ડ </h1>
+      <h1>અન્નકૂટોત્સવ સુરત આમંત્રણ કાર્ડ
+      </h1>
       <input
         type="text"
         value={name}
