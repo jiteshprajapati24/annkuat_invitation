@@ -143,7 +143,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>અન્નકૂટોત્સવ સુરત આમંત્રણ કાર્ડ
+      <h1>અન્નકૂટોત્સવ આમંત્રણ કાર્ડ
       </h1>
       <input
         type="text"
