@@ -149,7 +149,7 @@ function App() {
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="મહેમાનશ્રી નું નામ"
+        placeholder="Guest Name/ મહેમાનશ્રી નું નામ"
         className="name-input"
       />
 
